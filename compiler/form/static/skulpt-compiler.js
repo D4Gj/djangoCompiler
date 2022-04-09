@@ -102,19 +102,7 @@ function runit(editorElem, outputElem) {
     const inputLinesIter = v01dInputGenerator()
 
     Sk.configure({
-        inputfun: function () {
-            output.setReadOnly(false);
-            // the function returns a promise to give a result back later...
-            return new Promise(function (resolve, reject) {
-                resolve(inputLinesIter.next().value)
-
-                $(".stop-button").on("click", function (e) {
-                    $(outputElem).unbind();
-                    output.setReadOnly(true);
-                    return resolve();
-                });
-            });
-        },
+        inputfun: () => inputLinesIter.next().value,
         output: function (text) {
             output.insert(text);
             output.prevCursorPosition = output.getCursorPosition();
@@ -124,6 +112,13 @@ function runit(editorElem, outputElem) {
         __future__: Sk.python3,
         execLimit: Number.POSITIVE_INFINITY,
     });
+
+    $(".stop-button").on("click", function (e) {
+        $(outputElem).unbind();
+        output.setReadOnly(true);
+        return resolve();
+    });
+
     //(Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = "mycanvas"; //for future pupose
     var myPromise = Sk.misceval.asyncToPromise(function () {
         return Sk.importMainWithBody("<stdin>", false, prog, true);
