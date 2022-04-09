@@ -1,0 +1,101 @@
+<button onclick="run_vs()">run</button>
+<div class='editor_class' id='editor'>a = int(input())
+b = int(input())
+print(a,b)
+</div>
+<div class='compiler_class'><p>Output:</p><textarea id='console' readonly></textarea>
+    <p>Input:</p>
+    <textarea id='input_brython'>1
+2</textarea>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.14/ace.js"
+        integrity="sha512-6ts6Fu561/yzWvD6uwQp3XVYwiWNpWnZ0hdeQrETqtnQiGjTfOS06W76aUDnq51hl1SxXtJaqy7IsZ3oP/uZEg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://raw.githack.com/pythonpad/brython-runner/master/lib/brython-runner.bundle.js"
+        type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.14/ext-language_tools.min.js"
+        integrity="sha512-S7Whi8oQAQu/MK6AhBWufIJIyOvqORj+/1YDM9MaHeRalsZjzyYS7Usk4fsh+6J77PUhuk5v/BxaMDXRdWd1KA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script>
+    ace.require("ace/ext/language_tools");
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/vibrant_ink");
+    editor.getSession().setMode("ace/mode/python");
+    editor.setFontSize("16px");
+    editor.container.style.height = "100px"
+    editor.setOptions({
+        enableLiveAutocompletion: true,
+        copyWithEmptySelection: true,
+        showGutter: true,
+        enableBasicAutocompletion: true,
+        useWrapMode: false, // wrap text to view
+        indentedSoftWrap: false,
+    });
+
+    function run() {
+        const cons = document.getElementById("console");
+        const runner = new BrythonRunner({
+            stdout: {
+                write(content) {
+                    cons.innerHTML = content;
+                    cons.scrollTop = cons.scrollHeight;
+                },
+                flush() {
+                }
+            },
+            stderr: {
+                write(content) {
+                    cons.innerHTML = content;
+                    cons.scrollTop = cons.scrollHeight;
+                },
+                flush() {
+                }
+            },
+            stdin: {
+                async readline() {
+                    cons.innerHTML += "\n";
+                    cons.scrollTop = cons.scrollHeight;
+                    console.log("Asd" + document.getElementById("input_brython").value);
+                    return document.getElementById("input_brython").value;
+                },
+                flush() {
+                }
+            }
+        });
+        var code = editor.getValue();
+        runner.runCode(code)
+    }
+    function run_vs() {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:42920/run");
+
+        xhr.setRequestHeader("Accept", "application/json");
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.onload = () => console.log(xhr.responseText);
+
+        let data = {
+    "lang": "python",
+    "source": "a=int(input())\nprint(a+a)",
+    "tests": "1",
+    };
+
+        xhr.send(data);
+
+    }
+    function run_init() {
+
+        if (document.getElementById("console") != '') {
+            document.getElementById("console").innerHTML = '';
+            run();
+            console.log(document.getElementById('editor').innerText);
+
+
+        } else {
+            run()
+        }
+    }
+</script>

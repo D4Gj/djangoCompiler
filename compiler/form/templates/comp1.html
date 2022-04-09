@@ -1,0 +1,30 @@
+<body onload="brython()">
+
+
+<script type="text/python">
+
+from browser import alert, document, html
+import sys,io
+
+def run(event):
+    try:
+        sys.stdin = io.StringIO(document['input_c'].value);
+        exec(document['code'].value)
+    except Exception:
+        error_message=traceback.format_exc()
+        document['error_message_textarea'].value=error_message
+
+document['run'].bind('click',run)
+</script>
+
+<input id='code' value='a = int(input())'></input>
+<button id='run'>
+    RUN
+</button>
+<br>
+<textarea id='error_message_textarea' style='color:red;width: 300px; height: 300px;'></textarea>
+<textarea id='input_c' style='color:red;width: 300px; height: 300px;'></textarea>
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.3.2/brython.js" integrity="sha512-xcnINzomPJ4JVqwg5vzMCja2BSuE2ocL3TvvI+h3/t/VYMcqycixgYpISy9OhoUqXORqJDkmfjBoepEvnJ5fZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.3.2/brython_stdlib.js" integrity="sha512-g0RUVRnYv/0dDqYiDb8aoGYozkXTljXWtjnziFJnLXiZYB7khzoSwET5cu4SDi5LtOFBOdIIObGG9eiFdU1hcQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
